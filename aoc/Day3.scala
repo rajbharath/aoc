@@ -14,7 +14,17 @@ object Day3 extends App {
     i1
   }
 
-  def dedupe(c: Seq[Item]): Item = c.distinct.head
+  def getItemCommonInGroups(group: Seq[Seq[Item]]): Seq[Item] = for {
+    i1 <- group(0)
+    i2 <- group(1)
+    i3 <- group(2)
+    if (i1 == i2 && i1 == i3)
+  } yield {
+    i1
+  }
+
+  def dedupe(c: Seq[Item]): Seq[Item] = c.distinct
+  def dedupeHead(c: Seq[Item]): Item = dedupe(c).head
 
   def getPriority(item: Item): Int = itemValues.indexOf(item) + 1
 
@@ -37,10 +47,23 @@ object Day3 extends App {
 
   def sumOfItemPriorites(filename: String): Int = getRuckSacks(parseInput(filename)).toList
     .map(getTypesInBothCompartments)
-    .map(dedupe)
+    .map(dedupeHead)
     .map(getPriority)
     .sum
 
+  def sumOfBadgeItemPriorites(filename: String) = getRuckSacks(parseInput(filename))
+    .map(r => dedupe(r.c1 ++ r.c2))
+    .grouped(3)
+    .map(getItemCommonInGroups)
+    .map(dedupeHead)
+    .map(getPriority)
+    .sum
+
+  // Part1
   println(sumOfItemPriorites("testday3.txt"))
   println(sumOfItemPriorites("inputday3.txt"))
+  
+  // Part2
+  println(sumOfBadgeItemPriorites("testday3.txt"))
+  println(sumOfBadgeItemPriorites("inputday3.txt"))
 }
