@@ -39,31 +39,38 @@ object Day2 extends App {
     case _ => (Result.Lose, Result.Won)
   }
 
+  def getPredictedPlay(p: Play, char: Char): Play = (p, char) match {
+    case (Play.Rock,  'Z') => Play.Paper
+    case (Play.Scissors,  'Z') => Play.Rock
+    case (Play.Paper,  'Z') => Play.Scissors
+    case (_, 'Y') => p
+    case (Play.Rock, 'X') => Play.Scissors
+    case (Play.Scissors, 'X') => Play.Paper
+    case (Play.Paper, 'X') => Play.Rock
+  }
+
   def getPlay(char: Char) = char match {
     case ('A' | 'X') => Play.Rock
     case ('B' | 'Y') => Play.Paper
     case ('C' | 'Z') => Play.Scissors
   }
 
-  def getTurn(line: String)  = {
-    line.charAt(0)
-  }
+  def getTurn(line: String)  = Turn(getPlay(line.charAt(0)), getPlay(line.charAt(2)))
+  def getPredictedTurn(line: String)  = Turn(getPlay(line.charAt(0)), getPredictedPlay(getPlay(line.charAt(0)), line.charAt(2)))
   
-  def parseInput(filename: String): List[Turn] = 
+  def parseInput(filename: String): Iterator[String] = 
     Try {
       val source = scala.io.Source.fromFile(filename)
-      source.getLines().map((line) => {
-        Turn(getPlay(line.charAt(0)), getPlay(line.charAt(2)))
-      }).toList
+      source.getLines()
     } match {
       case Success(turns) => turns
       case Failure(e) => {
         println(e)
-        List.empty
+        Iterator[String]()
       }
     }
 
-  def getScoresPart1(turns: List[Turn]): Int = {
+  def getScoresPart(turns: List[Turn]): Int = {
     val score =
           turns
           .map(getResult)
@@ -77,9 +84,14 @@ object Day2 extends App {
 
     score._2 + weight._2
   }
- 
-  print(getScoresPart1(parseInput("testday2.txt")))
-  print(getScoresPart1(parseInput("inputday2.txt")))
+  
+  //  Part1
+  println(getScoresPart(parseInput("testday2.txt").map(getTurn).toList))
+  println(getScoresPart(parseInput("inputday2.txt").map(getTurn).toList))
+
+  //  Part2
+  println(getScoresPart(parseInput("testday2.txt").map(getPredictedTurn).toList))
+  println(getScoresPart(parseInput("inputday2.txt").map(getPredictedTurn).toList))
   
 }
 
