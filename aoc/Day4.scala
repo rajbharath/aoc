@@ -1,6 +1,6 @@
 import scala.util.{Success, Failure, Try}
 
-object Day3 extends App {
+object Day4 extends App {
   case class SectionRange(start: Int, end: Int)
   case class SectionRangePair(p1: SectionRange, p2: SectionRange)
 
