@@ -5,6 +5,7 @@ function isMarker(start, windowSize, stream) {
   for (c in currentWindow) {
     if (charsCountMap[currentWindow[c]]) {
       markerFound = false;
+      break;
     } else {
       charsCountMap[currentWindow[c]] = 1;
     }
@@ -14,7 +15,7 @@ function isMarker(start, windowSize, stream) {
 
 function findMarker(stream, windowSize) {
   var markerEndIndex = -1;
-  for (let i = 0; i <= stream.length - 4 && (markerEndIndex == -1); i++) {
+  for (let i = 0; i <= stream.length - windowSize && (markerEndIndex == -1); i++) {
     if (isMarker(i, windowSize, stream)) {
       markerEndIndex = i + windowSize;
     }
