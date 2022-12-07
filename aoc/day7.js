@@ -38,6 +38,15 @@ function FileSystem() {
     }, []);
   }
 
+  this.computeSize = function(fs){
+    if (!fs.DIRS || !fs.FILES) {
+      return 0;
+    }
+    let dirTotal = fs.DIRS.reduce((acc, dir) => this.computeSize(dir) + acc, 0);
+    fs["size"] = dirTotal + fs.FILES.reduce((acc, file) => acc + file.size, 0)
+    return fs["size"];
+  }
+
 }
 
 FileSystem.prototype.goToRoot = function () {
@@ -73,16 +82,7 @@ FileSystem.prototype.cdDir = function (dirName) {
 }
 
 FileSystem.prototype.calculateSize = function () {
-  function computeSize(fs) {
-    if (!fs.DIRS || !fs.FILES) {
-      return 0;
-    }
-    let dirTotal = fs.DIRS.reduce((acc, dir) => computeSize(dir) + acc, 0);
-    fs["size"] = dirTotal + fs.FILES.reduce((acc, file) => acc + file.size, 0)
-    return fs["size"];
-  }
-
-  return computeSize(this.fileSystem);
+  return this.computeSize(this.fileSystem);
 }
 
 FileSystem.prototype.getDirsWithAtMostSize = function(size) {
@@ -148,7 +148,7 @@ function queryFileSystem(filename, puzzleFunction) {
       .map(line => new Command(line))
       .forEach(cmd => cmd.exec(filesys));
     filesys.calculateSize();
-    
+
     puzzleFunction(filesys);
   });
 }
